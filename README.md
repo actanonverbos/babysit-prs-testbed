@@ -2,6 +2,8 @@
 
 Throwaway repo to test the `/babysit-prs` Claude Code loop end-to-end.
 
+**Start here:** [`TEST-PLAN.md`](TEST-PLAN.md) — self-contained test plan (PR map, scenarios, resets, paste-in prompt). A fresh session needs nothing else.
+
 `main` is a green baseline. Open PRs each introduce one deliberate, fixable problem
 (lint error, failing test, type error, etc.) and are arranged to exercise the loop's
 ordered one-PR-per-cycle selection (stacked PRs, overlapping PRs, review-only PRs).
