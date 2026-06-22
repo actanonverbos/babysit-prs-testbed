@@ -38,9 +38,16 @@ it is the source of truth for behaviour. Summary:
 | #5 | `pr-stack-b` | `pr-stack-a` | failing test + inherits #4's lint | stacked ordering (**#4 before #5**) |
 | #6 | `pr-overlap-1` | main | none (all green) | review-only path; **overlaps #7** |
 | #7 | `pr-overlap-2` | main | unused variable | lint fix; **overlaps #6** (both edit `src/util.ts`) |
+| #8 | `pr-logic-sort` | main | `sortAsc` uses lexicographic `nums.sort()` (also mutates input) | **reviewer-only** (lint/type/test all green) — Codex `P2` |
+| #9 | `pr-security-redos` | main | `isValidId` ReDoS regex `/^([a-zA-Z0-9]+)+$/` (nested quantifier) | **reviewer-only** (CI-green) — Codex `P2` (security) |
+| #10 | `pr-edge-lastn` | main | `lastN` off-by-one: `slice(length - n)` wrong when `n > length` | **reviewer-only** (CI-green) — Codex `P2` |
 
-Expected first selection on a full queue: **#4** (oldest `updatedAt`, and the stack base — correctly before #5).
-The overlap pair sorts **#6 before #7**.
+**Two fault classes.** #1–#7 are **deterministic** faults — caught by the four checks (lint/type/test), *not* Codex. #8–#10 (added 2026-06-22) are **reviewer-only**: each compiles, lints, and passes a happy-path test, so CI is green and **Codex is the only detector**. They exist to exercise §5's review + auto-fix loop and the Claude fallback.
+
+**Codex severity calibration (verified 2026-06-22):** `codex review` labels findings `P0`–`P3` (not "Critical/High"), and calibrates conservatively — all three reviewer-only bugs above, *including the ReDoS*, came back **`P2`**. The skill auto-fixes `P0`/`P1`/`P2` and surfaces `P3`. Also: `codex review` must be run with `-c 'mcp_servers={}'` or it hangs indefinitely on MCP startup.
+
+Expected first selection on a full queue: by the rules, **oldest `updatedAt` first** (stack base before child, overlap oldest-first as local constraints). NOTE: `updatedAt` drifts every time a branch is force-pushed during reset, so the *specific* top PR shifts between runs — verify the *ordering rules* hold, not a hard-coded number.
+The overlap pair (#6/#7) sorts oldest-`updatedAt`-first.
 
 ## Original broken-state SHAs (for resets)
 
@@ -55,6 +62,9 @@ pr-stack-a      169a38a916079b3778f04d93158c33ce19087be0
 pr-stack-b      2db956f65bc20df25ace2923264039a5f8ff4d7d
 pr-overlap-1    ee44e3acce01c16c86d774dae0d213a97750b509
 pr-overlap-2    7007d136afbbae6ce9a24fc08e4d954f0908ea08
+pr-logic-sort     5de63d93f1d667fc8bc8d7e3ce25bba5b94897eb
+pr-security-redos a6bac49b458ccd1393bbea5d879b43b154a59db1
+pr-edge-lastn     1fc134809a09e8e3d5725d98564e89321e516ecd
 ```
 
 ## Test scenarios
