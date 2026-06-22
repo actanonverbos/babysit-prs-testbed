@@ -3,5 +3,6 @@ export function greet(name: string): string {
 }
 
 export function shout(value: string): string {
+  const tmp = value;
   return value.toUpperCase();
 }
