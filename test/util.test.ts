@@ -3,7 +3,7 @@ import { greet, shout } from "../src/util.js";
 
 describe("util", () => {
   it("greets by name", () => {
-    expect(greet("Iz")).toBe("Hello, Iz!");
+    expect(greet("Iz")).toBe("Hello, Iz! Welcome.");
   });
 
   it("shouts in uppercase", () => {
